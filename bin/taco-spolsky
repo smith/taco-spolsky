@@ -52,7 +52,7 @@ if (process.argv.length < 4) {
   process.exit(1);
 }
 
-// Initial values, set by environment variables
+// Initial values, set by command line parameters
 let hash = `#${process.argv[2] || ""}`,
   search = `?${process.argv[3] || ""}`,
   desiredMessage = process.argv[4] || "Taco Spolsky recommends me"
