@@ -9,7 +9,7 @@ It's a genius little bit of terrible JavaScript, and figuring it out is hard
 enough in the browser. This program lets you run it in Node.js on the command
 line, and makes it easier to debug and trace to figure out the solution.
 
-# THIS PROGRAM DOES NOT GIVE YOU THE ANSWER, JUST AND ENVIRONMENT TO MAKE IT EASIER TO WORK ON! NO CHEATING!
+# THIS PROGRAM DOES NOT GIVE YOU THE ANSWER, JUST AN ENVIRONMENT TO MAKE IT EASIER TO WORK ON! NO CHEATING!
 
 Clone this repository, `npm install`, then run:
 
