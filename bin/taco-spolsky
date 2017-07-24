@@ -1,0 +1,165 @@
+#!/usr/bin/env node
+
+// http://taco-spolsky.github.io/ is a site used in some Trello job application
+// challenges (example: https://trello.com/jobs/details?gh_jid=478513/). The
+// objective is to click the button and have Taco recommend you for the job.
+//
+// This program is only going to help you iterate more quickly on solving the
+// problem, the answers are contained in you, not here.
+//
+// This is a Node.js program that does the same thing as in the browser, but
+// lets you run it on the command line for quicker iteration.
+//
+// Usage: ./bin/taco-spolsky SEARCH HASH [MESSAGE]
+//
+// The default for MESSAGE is "Taco Spolsky recommends me"
+//
+// Running the program with incorrect parameters will exit with an assertion error.
+//
+// Example:
+//
+//     $ ./bin/taco-spolsky foo bar "I am good"
+//     http://taco-spolsky.github.io/?#
+//
+//
+//       Taco Spolsky
+//         1) Recommends you
+//
+//
+//       0 passing (135ms)
+//       1 failing
+//
+//       1) Taco Spolsky Recommends you:
+//
+//           AssertionError: 'Taco recommends me' == 'Taco Spolsky'
+//           + expected - actual
+//
+//           -Taco recommends me
+//           +Taco Spolsky
+//
+//           at Context.<anonymous> (bin/taco-spolsky:69:27)
+//
+// Keep adjusting the values of SEARCH, HASH, and MESSAGE until you don't get
+// an error. Once you get it right, try pasting the URL into your browser and
+// clicking the button.
+//
+// This is a really brilliant fun problem, so enjoy!
+
+require("inline-mocha")(module);
+
+if (process.argv.length < 4) {
+  console.error(`Usage: ${process.argv[1]} SEARCH HASH [MESSAGE]`);
+  process.exit(1);
+}
+
+// Initial values, set by environment variables
+let hash = `#${process.argv[2] || ""}`,
+  search = `?${process.argv[3] || ""}`,
+  desiredMessage = process.argv[4] || "Taco Spolsky recommends me"
+
+// fake browser
+let output = { textContent: "" };
+window = {
+  addEventListener: function (eventName, callback) {
+    callback({ target: { id: "choose" } });
+    console.log(`http://taco-spolsky.github.io/${search}${hash}`);
+    describe("Taco Spolsky", function() {
+      it("Recommends you", function() {
+        require("assert").equal(desiredMessage, output.textContent);
+      });
+    });
+  },
+  location: { hash, search },
+  name: "",
+};
+name = window.name;
+location = window.location;
+document = { getElementById: function () { return output; } };
+
+// start here
+ levelMap = {
+    'easy': 1,
+    'medium': .1,
+    'hard': .001
+  }
+
+  getSetting = function(key, settings) {
+    settings = settings.split("&")
+      for(i = 0; i<settings.length; i++){
+      setting = settings[i];
+        // Make sure there isn't weird stuff in the settings, if it's longer
+      // than we want just ignore it
+      if(setting.length <= 'level=medium'.length) {
+        if(setting.indexOf(key)) {
+          return setting.substr(setting.indexOf(key) + key.length + 1);
+        }
+      }
+    }
+    return 'hard';
+  }
+
+  validate = function(name, checksum) {
+    var string = name + "approved by Taco";
+    var testsum = 123;
+
+    for(var i = 0; i<string.length; i++) {
+      testsum = testsum * 13 + string.charCodeAt(i);
+      while(testsum > 10000000) {
+        testsum -= 1000000;
+      }
+    }
+
+    return testsum == checksum;
+  }
+
+  checksum = 'NOT APPROVED';
+
+  // Run until we've processed the whole hash
+  while(location.hash.length > 1 && !name) {
+    entries = location.hash.split('|');
+    for(i = 0; i<entries.length; i++) {
+      parts = entries[i].split('=');
+      name = decodeURIComponent(parts[0]);
+      value = decodeURIComponent(parts[1]);
+      if(name == 'checksum') {
+        checksum = value;
+      }
+    }
+  }
+
+  level = getSetting('level', window.location.search || '?level=hard');
+  if(!levelMap[level]) {
+    level = 'medium';
+  }
+
+  CandidateChooser = {
+    name: "Taco Spolsky",
+    recommend: function(e) {
+      if(e.target.id != 'choose') {
+        return;
+      }
+
+      random = Math.random();
+
+      if(random < levelMap[level]) {
+        this.name = "Taco Spolsky";
+      } else if(random > levelMap[level]) {
+        this.name = "Taco Spolsky";
+      } else if(random == levelMap[level]) {
+        this.name = "Taco Spolsky";
+      }
+
+      // This was code used for the demo
+      // this.name = "Joel Spolsky";
+
+      if(this.name != "Taco Spolsky") {
+        if(!validate(this.name, checksum)) {
+          this.name = "Taco Spolsky";
+        }
+      }
+
+      document.getElementById('candidate').textContent = this.name;
+    }
+  }
+
+  window.addEventListener('click', CandidateChooser.recommend);
